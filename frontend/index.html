@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Feedback</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333333;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      text-align: left;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      color: #444444;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background: #0073e6;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #005bb5;
+    }
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Submit Your Feedback</h1>
+    <form id="feedbackForm">
+      <label for="customer_id">Customer ID:</label>
+      <input type="text" id="customer_id" name="customer_id" required>
+
+      <label for="comment">Comment:</label>
+      <textarea id="comment" name="comment" required></textarea>
+
+      <button type="submit">Submit Feedback</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    // 🔒 Placeholder for API Gateway endpoint
+    const apiUrl = "https://<API_ID>.execute-api.<REGION>.amazonaws.com/<STAGE>/feedback";
+
+    document.getElementById("feedbackForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const data = {
+        customer_id: document.getElementById("customer_id").value,
+        comment: document.getElementById("comment").value,
+        feedback_id: "fb" + Date.now(),
+        date: new Date().toISOString(),
+        status: "PENDING"
+      };
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          document.getElementById("status").innerText = "✅ Feedback submitted successfully!";
+          document.getElementById("status").className = "success";
+          document.getElementById("feedbackForm").reset();
+        } else {
+          const err = await response.text();
+          document.getElementById("status").innerText = "❌ Error: " + err;
+          document.getElementById("status").className = "error";
+        }
+      } catch (error) {
+        document.getElementById("status").innerText = "⚠️ Network error, please try again.";
+        document.getElementById("status").className = "error";
+      }
+    });
+  </script>
+</body>
+</html>
